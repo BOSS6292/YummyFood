@@ -8,8 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.boss.yummyfood.activities.RandomMealActivity
+import com.boss.yummyfood.adapters.MostPopularAdapter
 import com.boss.yummyfood.databinding.FragmentHomeBinding
+import com.boss.yummyfood.pojo.CategoryMeal
 import com.boss.yummyfood.pojo.Meal
 import com.boss.yummyfood.viewModel.HomeViewModel
 import com.bumptech.glide.Glide
@@ -19,6 +22,7 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var homemvmm: HomeViewModel
     private lateinit var randomeMeal: Meal
+    private lateinit var popularItemAdapter: MostPopularAdapter
 
     companion object {
         const val MEAL_ID = "1"
@@ -29,6 +33,7 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         homemvmm = ViewModelProvider(this)[HomeViewModel::class.java]
+        popularItemAdapter = MostPopularAdapter()
     }
 
     override fun onCreateView(
@@ -41,9 +46,38 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        poplarItemRecyclerView()
         homemvmm.getRandomMeal()
         observeRandomLiveData()
         onRandomMealClick()
+
+        homemvmm.getPopularMeal()
+        observePopularLiveData()
+        onPopularItemClick()
+    }
+
+    private fun onPopularItemClick() {
+        popularItemAdapter.onItemClick = {meal ->
+            val intent = Intent(activity,RandomMealActivity::class.java)
+            intent.putExtra(MEAL_ID,meal.idMeal)
+            intent.putExtra(MEAL_NAME,meal.strMeal)
+            intent.putExtra(MEAL_IMAGE,meal.strMealThumb)
+            startActivity(intent)
+        }
+    }
+
+    private fun poplarItemRecyclerView() {
+        binding.recViewMealsPopular.apply {
+            layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
+            adapter = popularItemAdapter
+        }
+    }
+
+    private fun observePopularLiveData() {
+        homemvmm.observePopularMealLiveData().observe(viewLifecycleOwner
+        ) { mealList ->
+            popularItemAdapter.setMeals(mealList = mealList as ArrayList<CategoryMeal>)
+        }
     }
 
     private fun onRandomMealClick() {
@@ -56,7 +90,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    fun observeRandomLiveData() {
+    private fun observeRandomLiveData() {
         homemvmm.observeRandomMealLiveData().observe(viewLifecycleOwner
         ) { meal ->
             Glide.with(this@HomeFragment)
