@@ -8,8 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.boss.yummyfood.activities.RandomMealActivity
+import com.boss.yummyfood.adapters.CategoriesAdapter
 import com.boss.yummyfood.adapters.MostPopularAdapter
 import com.boss.yummyfood.databinding.FragmentHomeBinding
 import com.boss.yummyfood.pojo.CategoryMeal
@@ -23,6 +25,7 @@ class HomeFragment : Fragment() {
     private lateinit var homemvmm: HomeViewModel
     private lateinit var randomeMeal: Meal
     private lateinit var popularItemAdapter: MostPopularAdapter
+    private lateinit var categoryAdapter: CategoriesAdapter
 
     companion object {
         const val MEAL_ID = "1"
@@ -54,14 +57,34 @@ class HomeFragment : Fragment() {
         homemvmm.getPopularMeal()
         observePopularLiveData()
         onPopularItemClick()
+
+        prepareCategoryRecyclerView()
+        homemvmm.getMealByCategory()
+        observeCategoryLiveData()
+
+
+    }
+
+    private fun prepareCategoryRecyclerView() {
+        categoryAdapter = CategoriesAdapter()
+        binding.recyclerView.apply {
+            layoutManager = GridLayoutManager(context, 3, GridLayoutManager.VERTICAL, false)
+            adapter = categoryAdapter
+        }
+    }
+
+    private fun observeCategoryLiveData() {
+        homemvmm.observeCategoryLiveData().observe(viewLifecycleOwner, Observer { categories ->
+            categoryAdapter.setCategoryList(categories)
+        })
     }
 
     private fun onPopularItemClick() {
-        popularItemAdapter.onItemClick = {meal ->
-            val intent = Intent(activity,RandomMealActivity::class.java)
-            intent.putExtra(MEAL_ID,meal.idMeal)
-            intent.putExtra(MEAL_NAME,meal.strMeal)
-            intent.putExtra(MEAL_IMAGE,meal.strMealThumb)
+        popularItemAdapter.onItemClick = { meal ->
+            val intent = Intent(activity, RandomMealActivity::class.java)
+            intent.putExtra(MEAL_ID, meal.idMeal)
+            intent.putExtra(MEAL_NAME, meal.strMeal)
+            intent.putExtra(MEAL_IMAGE, meal.strMealThumb)
             startActivity(intent)
         }
     }

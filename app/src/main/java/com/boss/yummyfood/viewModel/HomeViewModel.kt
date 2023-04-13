@@ -14,7 +14,7 @@ class HomeViewModel : ViewModel() {
 
     private var randomMealLiveData = MutableLiveData<Meal>()
     private var popularMealLiveData = MutableLiveData<List<CategoryMeal>>()
-    private var mealByCategory = MutableLiveData<MealsByCategoryList>()
+    private var mealByCategory = MutableLiveData<List<MealsByCategory>>()
 
     fun getRandomMeal() {
         RetrofitInstance.mealApi.randomMeal().enqueue(object : Callback<MealList> {
@@ -62,8 +62,8 @@ class HomeViewModel : ViewModel() {
                 call: Call<MealsByCategoryList>,
                 response: Response<MealsByCategoryList>,
             ) {
-                response.body().let {
-                    mealByCategory.postValue(it)
+                response.body()?.let {category->
+                    mealByCategory.postValue(category.categories)
                 }
             }
 
@@ -71,6 +71,10 @@ class HomeViewModel : ViewModel() {
                 TODO("Not yet implemented")
             }
         })
+    }
+
+    fun observeCategoryLiveData() : LiveData<List<MealsByCategory>>{
+        return mealByCategory
     }
 
 }
