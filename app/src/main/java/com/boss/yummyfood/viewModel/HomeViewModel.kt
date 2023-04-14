@@ -3,7 +3,6 @@ package com.boss.yummyfood.viewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.boss.yummyfood.pojo.*
 import com.boss.yummyfood.retrofit.RetrofitInstance
 import retrofit2.Call
@@ -26,7 +25,7 @@ class HomeViewModel : ViewModel() {
             }
 
             override fun onFailure(call: Call<MealList>, t: Throwable) {
-                TODO("Not yet implemented")
+                return
             }
         })
     }

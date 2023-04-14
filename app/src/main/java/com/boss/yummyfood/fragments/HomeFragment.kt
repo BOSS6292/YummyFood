@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.boss.yummyfood.activities.CategoryMealActivity
 import com.boss.yummyfood.activities.RandomMealActivity
 import com.boss.yummyfood.adapters.CategoriesAdapter
 import com.boss.yummyfood.adapters.MostPopularAdapter
@@ -31,6 +32,7 @@ class HomeFragment : Fragment() {
         const val MEAL_ID = "1"
         const val MEAL_NAME = "NAME"
         const val MEAL_IMAGE = "IMAGE"
+        const val CATEGORY_NAME = "NAME"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +64,16 @@ class HomeFragment : Fragment() {
         homemvmm.getMealByCategory()
         observeCategoryLiveData()
 
+        onCategoryClick()
 
+    }
+
+    private fun onCategoryClick() {
+        categoryAdapter.onItemClick = { category ->
+            val intent = Intent(activity,CategoryMealActivity::class.java)
+            intent.putExtra(CATEGORY_NAME,category.strCategory)
+            startActivity(intent)
+        }
     }
 
     private fun prepareCategoryRecyclerView() {

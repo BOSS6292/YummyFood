@@ -2,7 +2,6 @@ package com.boss.yummyfood.retrofit
 
 import com.boss.yummyfood.pojo.CategoryMealList
 import com.boss.yummyfood.pojo.MealList
-import com.boss.yummyfood.pojo.MealsByCategory
 import com.boss.yummyfood.pojo.MealsByCategoryList
 import retrofit2.Call
 import retrofit2.http.GET
@@ -17,9 +16,12 @@ interface MealApi {
     fun getMealById(@Query("i") id: String): Call<MealList>
 
     @GET("filter.php?")
-    fun getPopularItems(@Query("a")categoryName:String): Call<CategoryMealList>
+    fun getPopularItems(@Query("a") categoryName: String): Call<CategoryMealList>
 
     @GET("categories.php")
-    fun getMealByCategory() : Call<MealsByCategoryList>
+    fun getMealByCategory(): Call<MealsByCategoryList>
+
+    @GET("filter.php")
+    fun getMealsByCategory(@Query("c") categoryName: String): Call<CategoryMealList>
 
 }
