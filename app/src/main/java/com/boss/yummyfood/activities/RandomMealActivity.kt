@@ -56,7 +56,7 @@ class RandomMealActivity : AppCompatActivity() {
                 binding.tvInstructionsDetails.text = meal!!.strInstructions
                 binding.tvAreaDetails.text = "Area : ${meal!!.strArea}"
                 binding.tvCategoryDetails.text = "Category ${meal!!.strCategory}"
-                youtubeLink = meal.strYoutube
+                youtubeLink = meal.strYoutube.toString()
             }
         })
     }
