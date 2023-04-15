@@ -3,9 +3,11 @@ package com.boss.yummyfood.viewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.boss.yummyfood.db.MealDatabase
 import com.boss.yummyfood.pojo.*
 import com.boss.yummyfood.retrofit.RetrofitInstance
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -16,6 +18,18 @@ class HomeViewModel(val mealDatabase: MealDatabase) : ViewModel() {
     private var popularMealLiveData = MutableLiveData<List<CategoryMeal>>()
     private var mealByCategory = MutableLiveData<List<MealsByCategory>>()
     private var favoritesMealLiveData = mealDatabase.mealDao().getAllMeals()
+
+    fun deleteMeal(meal: Meal) {
+        viewModelScope.launch {
+            mealDatabase.mealDao().delete(meal)
+        }
+    }
+
+    fun insertMeal(meal: Meal) {
+        viewModelScope.launch {
+            mealDatabase.mealDao().upsert(meal)
+        }
+    }
 
     fun getRandomMeal() {
         RetrofitInstance.mealApi.randomMeal().enqueue(object : Callback<MealList> {
@@ -49,7 +63,7 @@ class HomeViewModel(val mealDatabase: MealDatabase) : ViewModel() {
                 }
 
                 override fun onFailure(call: Call<CategoryMealList>, t: Throwable) {
-                    TODO("Not yet implemented")
+                    return
                 }
             })
     }
