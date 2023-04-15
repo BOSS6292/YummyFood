@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.boss.yummyfood.activities.CategoryMealActivity
+import com.boss.yummyfood.activities.MainActivity
 import com.boss.yummyfood.activities.RandomMealActivity
 import com.boss.yummyfood.adapters.CategoriesAdapter
 import com.boss.yummyfood.adapters.MostPopularAdapter
@@ -23,7 +24,7 @@ import com.bumptech.glide.Glide
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var homemvmm: HomeViewModel
+    private lateinit var viewModel: HomeViewModel
     private lateinit var randomeMeal: Meal
     private lateinit var popularItemAdapter: MostPopularAdapter
     private lateinit var categoryAdapter: CategoriesAdapter
@@ -37,7 +38,7 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        homemvmm = ViewModelProvider(this)[HomeViewModel::class.java]
+        viewModel = (activity as MainActivity).viewModel
         popularItemAdapter = MostPopularAdapter()
     }
 
@@ -52,16 +53,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         poplarItemRecyclerView()
-        homemvmm.getRandomMeal()
+        viewModel.getRandomMeal()
         observeRandomLiveData()
         onRandomMealClick()
 
-        homemvmm.getPopularMeal()
+        viewModel.getPopularMeal()
         observePopularLiveData()
         onPopularItemClick()
 
         prepareCategoryRecyclerView()
-        homemvmm.getMealByCategory()
+        viewModel.getMealByCategory()
         observeCategoryLiveData()
 
         onCategoryClick()
@@ -70,8 +71,8 @@ class HomeFragment : Fragment() {
 
     private fun onCategoryClick() {
         categoryAdapter.onItemClick = { category ->
-            val intent = Intent(activity,CategoryMealActivity::class.java)
-            intent.putExtra(CATEGORY_NAME,category.strCategory)
+            val intent = Intent(activity, CategoryMealActivity::class.java)
+            intent.putExtra(CATEGORY_NAME, category.strCategory)
             startActivity(intent)
         }
     }
@@ -85,7 +86,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeCategoryLiveData() {
-        homemvmm.observeCategoryLiveData().observe(viewLifecycleOwner, Observer { categories ->
+        viewModel.observeCategoryLiveData().observe(viewLifecycleOwner, Observer { categories ->
             categoryAdapter.setCategoryList(categories)
         })
     }
@@ -108,7 +109,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun observePopularLiveData() {
-        homemvmm.observePopularMealLiveData().observe(viewLifecycleOwner
+        viewModel.observePopularMealLiveData().observe(viewLifecycleOwner
         ) { mealList ->
             popularItemAdapter.setMeals(mealList = mealList as ArrayList<CategoryMeal>)
         }
@@ -125,7 +126,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeRandomLiveData() {
-        homemvmm.observeRandomMealLiveData().observe(viewLifecycleOwner
+        viewModel.observeRandomMealLiveData().observe(viewLifecycleOwner
         ) { meal ->
             Glide.with(this@HomeFragment)
                 .load(meal!!.strMealThumb)
