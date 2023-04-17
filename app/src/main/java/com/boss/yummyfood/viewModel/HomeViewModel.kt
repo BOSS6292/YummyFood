@@ -18,6 +18,9 @@ class HomeViewModel(val mealDatabase: MealDatabase) : ViewModel() {
     private var popularMealLiveData = MutableLiveData<List<CategoryMeal>>()
     private var mealByCategory = MutableLiveData<List<MealsByCategory>>()
     private var favoritesMealLiveData = mealDatabase.mealDao().getAllMeals()
+    private var bottomSheetMealLiveData = MutableLiveData<Meal>()
+
+
 
     fun deleteMeal(meal: Meal) {
         viewModelScope.launch {
@@ -31,12 +34,19 @@ class HomeViewModel(val mealDatabase: MealDatabase) : ViewModel() {
         }
     }
 
+    private var saveStateOfRandomMeal : Meal? = null
+
     fun getRandomMeal() {
+        saveStateOfRandomMeal?.let {
+            randomMealLiveData.postValue(it)
+            return
+        }
         RetrofitInstance.mealApi.randomMeal().enqueue(object : Callback<MealList> {
             override fun onResponse(call: Call<MealList>, response: Response<MealList>) {
                 if (response.body() != null) {
                     val randomMeal: Meal = response.body()!!.meals[0]
                     randomMealLiveData.value = randomMeal
+                    saveStateOfRandomMeal = randomMeal
                 }
             }
 
@@ -96,6 +106,26 @@ class HomeViewModel(val mealDatabase: MealDatabase) : ViewModel() {
 
     fun observeFavoritesMealLiveData(): LiveData<List<Meal>> {
         return favoritesMealLiveData
+    }
+
+    fun getMealById(id: String) {
+        RetrofitInstance.mealApi.getMealById(id).enqueue(object : Callback<MealList> {
+            override fun onResponse(call: Call<MealList>, response: Response<MealList>) {
+                val meal = response.body()?.meals?.first()
+
+                meal?.let { meal ->
+                    bottomSheetMealLiveData.postValue(meal)
+                }
+            }
+
+            override fun onFailure(call: Call<MealList>, t: Throwable) {
+                return
+            }
+        })
+    }
+
+    fun observeBottomSheetMealLiveData(): LiveData<Meal> {
+        return bottomSheetMealLiveData
     }
 
 }

@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.boss.yummyfood.activities.CategoryMealActivity
@@ -16,6 +15,7 @@ import com.boss.yummyfood.activities.RandomMealActivity
 import com.boss.yummyfood.adapters.CategoriesAdapter
 import com.boss.yummyfood.adapters.MostPopularAdapter
 import com.boss.yummyfood.databinding.FragmentHomeBinding
+import com.boss.yummyfood.fragments.bottomSheet.MealBottomSheetFragment
 import com.boss.yummyfood.pojo.CategoryMeal
 import com.boss.yummyfood.pojo.Meal
 import com.boss.yummyfood.viewModel.HomeViewModel
@@ -67,6 +67,15 @@ class HomeFragment : Fragment() {
 
         onCategoryClick()
 
+        onPopularItemLongClick()
+
+    }
+
+    private fun onPopularItemLongClick() {
+        popularItemAdapter.onLongItemClick = {meal->
+            val mealBottomSheetFragment = MealBottomSheetFragment.newInstance(meal.idMeal)
+            mealBottomSheetFragment.show(childFragmentManager,"Meal Info")
+        }
     }
 
     private fun onCategoryClick() {
