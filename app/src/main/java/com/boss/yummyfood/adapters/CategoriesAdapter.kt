@@ -2,6 +2,7 @@ package com.boss.yummyfood.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
 import com.boss.yummyfood.databinding.CategoryItemBinding
 import com.boss.yummyfood.pojo.MealsByCategory

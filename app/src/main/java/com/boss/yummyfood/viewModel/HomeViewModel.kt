@@ -1,5 +1,6 @@
 package com.boss.yummyfood.viewModel
 
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,7 +20,7 @@ class HomeViewModel(val mealDatabase: MealDatabase) : ViewModel() {
     private var mealByCategory = MutableLiveData<List<MealsByCategory>>()
     private var favoritesMealLiveData = mealDatabase.mealDao().getAllMeals()
     private var bottomSheetMealLiveData = MutableLiveData<Meal>()
-
+    private val searchLiveData = MutableLiveData<List<Meal>>()
 
 
     fun deleteMeal(meal: Meal) {
@@ -34,7 +35,7 @@ class HomeViewModel(val mealDatabase: MealDatabase) : ViewModel() {
         }
     }
 
-    private var saveStateOfRandomMeal : Meal? = null
+    private var saveStateOfRandomMeal: Meal? = null
 
     fun getRandomMeal() {
         saveStateOfRandomMeal?.let {
@@ -126,6 +127,25 @@ class HomeViewModel(val mealDatabase: MealDatabase) : ViewModel() {
 
     fun observeBottomSheetMealLiveData(): LiveData<Meal> {
         return bottomSheetMealLiveData
+    }
+
+    fun searchMeal(searchName: String) {
+        RetrofitInstance.mealApi.searchMeals(searchName).enqueue(object : Callback<MealList> {
+            override fun onResponse(call: Call<MealList>, response: Response<MealList>) {
+                val meal = response.body()?.meals
+                meal?.let {
+                    searchLiveData.postValue(it)
+                }
+            }
+
+            override fun onFailure(call: Call<MealList>, t: Throwable) {
+                return
+            }
+        })
+    }
+
+    fun observeSearchLiveData(): LiveData<List<Meal>> {
+        return searchLiveData
     }
 
 }
